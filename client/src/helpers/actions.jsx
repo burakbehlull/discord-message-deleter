@@ -1,7 +1,21 @@
 import axios from "axios"
 import { useState } from "react"
 
-const DeleteMessages = (data, userId, channelId, TOKEN) => {
+const GetMessages =  async (TOKEN, channelId) => {
+    const [data, setData] = useState([])
+    const [error, setError] = useState({})
+    await axios.get(`https://discord.com/api/v9/channels/${channelId}/messages`, {
+        headers: {
+            "Authorization": TOKEN
+        }
+    }).then(res=> setData(res.data)).catch(err=> setError(err))
+    return {
+        data: data,
+        error: error
+    }
+}
+
+const DeleteMessages = async (data, userId, channelId, TOKEN) => {
     const [data, setData] = useState([])
     const [error, setError] = useState({})
     data.filter(message=> message.author.id== userId).forEach(message => {
@@ -37,5 +51,6 @@ const DeleteMessages = (data, userId, channelId, TOKEN) => {
 }
 
 export {
-    DeleteRequest
+    GetMessages,
+    DeleteMessages,
 }
