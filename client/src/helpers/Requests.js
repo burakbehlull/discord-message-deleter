@@ -1,24 +1,20 @@
 import axios from "axios"
-import { useState } from "react"
 
 const GetMessages =  async (TOKEN, channelId) => {
-    const [data, setData] = useState([])
-    const [error, setError] = useState({})
-    await axios.get(`https://discord.com/api/v9/channels/${channelId}/messages`, {
+    const res = await axios.get(`https://discord.com/api/v9/channels/${channelId}/messages`, {
         headers: {
             "Authorization": TOKEN
         }
-    }).then(res=> setData(res.data)).catch(err=> setError(err))
+    })
+    console.log(1)
     return {
-        data: data,
-        error: error
+        data: res.data,
+        error: res.error
     }
 }
 
 const DeleteMessages = async (data, userId, channelId, TOKEN) => {
-    const [data, setData] = useState([])
-    const [error, setError] = useState({})
-    data.filter(message=> message.author.id== userId).forEach(message => {
+    data.filter(message=> message.author.id== userId).forEach((message, i) => {
         setTimeout(async () => {
             try {
                 await axios.delete(`https://discord.com/api/v9/channels/${channelId}/messages/${message.id}`,{
@@ -26,7 +22,7 @@ const DeleteMessages = async (data, userId, channelId, TOKEN) => {
                     'Authorization': TOKEN,
                     'Content-Type': 'application/json'
                     }
-                }).then(res=> setData(res.data)).then(err=> setError(err))
+                })
                 console.log(`${message.content} adlı mesaj başarıyla silindi.`);
             } catch (error) {
                 if (error.response && error.response.status === 429) {
@@ -41,13 +37,10 @@ const DeleteMessages = async (data, userId, channelId, TOKEN) => {
                     console.error(`Başarısız silinme ${message.content}: ${error.message}`);
                 }
             }
-        }, index * 5000)
+        }, i * 5000)
     })
 
-    return {
-        data: data,
-        error: error
-    }
+    return;
 }
 
 export {
